@@ -1450,22 +1450,40 @@ class EnhancedFaceRecognitionSystem:
         # self.root.withdraw()
         threading.Thread(target=self.run_game_wrapper, daemon=True).start()
 
-    def run_game_wrapper(self):
-        """Actual game runner - pygame Game"""
-        try:
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-        except:
-            script_dir = os.getcwd()
-        main_map_path = r"C:\Users\troyz\Desktop\nuuts-manan-tosgon\map\main_map.tmx"
-        if not os.path.exists(main_map_path):
-            print("main_map.tmx not found in the map folder!")
-            messagebox.showerror(
-                "Алдаа", "main_map.tmx олдсонгүй. 'map' фолдерт оруулна уу.")
-            return
-        # fullscreen=False байлгавал development-д амар
+
+def run_game_wrapper(self):
+    """Actual game runner - pygame Game"""
+    try:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+    except:
+        script_dir = os.getcwd()
+
+    # MAP ФАЙЛЫН ЗАМ - ЭНИЙГ ӨӨРЧИЛНӨ ҮҮ!
+    main_map_path = r"C:\ТАНЫ\ЗАМ\map\main_map.tmx"
+
+    # Эсвэл relative path:
+    # main_map_path = os.path.join(script_dir, "map", "main_map.tmx")
+
+    if not os.path.exists(main_map_path):
+        print(f"main_map.tmx not found at: {main_map_path}")
+        messagebox.showerror(
+            "Алдаа",
+            f"main_map.tmx олдсонгүй!\n\nХайсан зам:\n{main_map_path}\n\n'map' фолдерт файлаа оруулна уу."
+        )
+        return
+
+    try:
+        # Game class-ийг үүсгэх
         game = Game(main_map_path, fullscreen=False)
         game.run()
-
+    except NameError as e:
+        print(f"NameError: {e}")
+        messagebox.showerror("Алдаа", f"Game class олдсонгүй!\n\nАлдаа: {e}")
+    except Exception as e:
+        print(f"Game алдаа: {e}")
+        import traceback
+        traceback.print_exc()
+        messagebox.showerror("Алдаа", f"Тоглоом эхлэхэд алдаа гарлаа:\n\n{e}")
 
 # ======================================================================
 #                          GAME CODE (pygame)
