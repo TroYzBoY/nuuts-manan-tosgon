@@ -1456,7 +1456,7 @@ class EnhancedFaceRecognitionSystem:
             script_dir = os.path.dirname(os.path.abspath(__file__))
         except:
             script_dir = os.getcwd()
-        main_map_path = r"ТАНЫ_ФАЙЛЫН_БҮРЭН_ЗАМ\main_map.tmx"
+        main_map_path = r"C:\Users\troyz\Desktop\nuuts-manan-tosgon\map\main_map.tmx"
         if not os.path.exists(main_map_path):
             print("main_map.tmx not found in the map folder!")
             messagebox.showerror(
