@@ -289,7 +289,7 @@ class NPC:
 
 
 class Player:
-    def __init__(self, x, y, tile_w, tile_h):
+    def __init__(self, x, y, tile_w, tile_h, player_name="Player"):
         self.tile_w = tile_w
         self.tile_h = tile_h
         self.size_multiplier = 1.0
@@ -297,6 +297,7 @@ class Player:
         self.render_h = int(tile_h * self.size_multiplier)
         self.pixel_x = x * tile_w
         self.pixel_y = y * tile_h
+        self.player_name = player_name  # Face ID-аас танигдсан нэр
         self.speed = 1
         self.run_speed = 3
 
@@ -596,6 +597,25 @@ class Player:
         else:
             surface.blit(img, (self.pixel_x - camera_x,
                          self.pixel_y - camera_y))
+        
+        # Draw player name tag (Face ID-аас танигдсан нэр)
+        if hasattr(self, 'player_name') and self.player_name:
+            font = pygame.font.Font(None, 20)
+            name_surf = font.render(self.player_name, True, (0, 255, 159))  # Face Lock өнгө
+            name_x = self.pixel_x - camera_x + (self.render_w - name_surf.get_width()) // 2
+            name_y = self.pixel_y - camera_y - 15
+            
+            # Draw background for name
+            bg_rect = pygame.Rect(name_x - 5, name_y - 2, name_surf.get_width() + 10, name_surf.get_height() + 4)
+            bg_surf = pygame.Surface((bg_rect.width, bg_rect.height))
+            bg_surf.set_alpha(200)
+            bg_surf.fill((10, 14, 39))  # Face Lock dark background
+            surface.blit(bg_surf, bg_rect.topleft)
+            
+            # Draw border
+            pygame.draw.rect(surface, (0, 255, 159), bg_rect, 1)
+            
+            surface.blit(name_surf, (name_x, name_y))
 
 
 class Slime:
@@ -1460,7 +1480,7 @@ def spawn_slimes_randomly(map_obj, count=5):
 
 
 class Game:
-    def __init__(self, tmx_file, fullscreen=True):
+    def __init__(self, tmx_file, fullscreen=True, player_name="Player"):
         pygame.init()
         pygame.mixer.init()
 
@@ -1483,7 +1503,7 @@ class Game:
                 (self.screen_width, self.screen_height))
 
         pygame.display.set_caption(
-            "Medieval RPG - Click to Shoot, SPACE to Attack/Continue, E to Interact")
+            f"Medieval RPG - {player_name} - Click to Shoot, SPACE to Attack/Continue, E to Interact")
         self.clock = pygame.time.Clock()
         self.running = True
 
@@ -1492,7 +1512,7 @@ class Game:
         self.debug_draw_teleports = False
 
         self.player = Player(166, 57, self.game_map.tile_w,
-                             self.game_map.tile_h)
+                             self.game_map.tile_h, player_name=player_name)
 
         self.teleport_cooldown = 0
         self.teleport_marker_rect = None
@@ -2127,11 +2147,21 @@ if __name__ == "__main__":
         sys.exit(1)
 
     start_fullscreen = False
-    if len(sys.argv) > 1 and sys.argv[1].lower() in ['fullscreen', '-f', '--fullscreen']:
-        start_fullscreen = True
+    player_name = "Player"  # Default нэр
+    
+    # Command line arguments унших
+    for arg in sys.argv[1:]:
+        if arg.lower() in ['fullscreen', '-f', '--fullscreen']:
+            start_fullscreen = True
+        elif arg.startswith('--player-name='):
+            # Нэрийг decode хийх
+            import urllib.parse
+            encoded_name = arg.split('=', 1)[1]
+            player_name = urllib.parse.unquote(encoded_name)
+            print(f"Player name from Face ID: {player_name}")
 
     try:
-        game = Game(main_map_path, fullscreen=start_fullscreen)
+        game = Game(main_map_path, fullscreen=start_fullscreen, player_name=player_name)
         game.run()
     except Exception as e:
         print(f"\nError starting game: {e}")

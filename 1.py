@@ -1459,7 +1459,7 @@ def run_game_wrapper(self):
         script_dir = os.getcwd()
 
     # MAP ФАЙЛЫН ЗАМ - ЭНИЙГ ӨӨРЧИЛНӨ ҮҮ!
-    main_map_path = r"C:\ТАНЫ\ЗАМ\map\main_map.tmx"
+    main_map_path = r"C:\Users\Dell\Desktop\nuuts manan tosgon\nuuts-manan-tosgon\map\main_map.tmx"
 
     # Эсвэл relative path:
     # main_map_path = os.path.join(script_dir, "map", "main_map.tmx")
